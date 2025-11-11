@@ -85,7 +85,7 @@ if not errors_404.empty:
 else:
     print("\nNo 404 errors found in the dataset.")
 
-# --- Step 4: User Behavior Analysis ---
+# --- 4: User Behavior Analysis ---
 
 # a) Most frequently used HTTP methods
 method_counts = df['method'].value_counts()
@@ -148,4 +148,33 @@ plt.xlabel('Hour of Day')
 plt.ylabel('Number of Requests')
 plt.xticks(rotation=0)
 plt.tight_layout()
+plt.show()
+
+
+# Ensure status is integer
+df['status'] = df['status'].astype(int)
+
+# Filter error requests
+error_requests = df[df['status'] >= 400]
+
+# Count errors per resource
+errors_per_resource = error_requests['resource'].value_counts()
+
+# Top resource(s) generating errors
+print('Errors per resource:')
+print(errors_per_resource.head(10))
+
+print('Average response size per request type:')
+avg_size_per_method = df.groupby('method')['size'].mean()
+print(avg_size_per_method)
+
+print('Server load patterns by hour')
+df['hour'] = df['timestamp'].dt.hour
+requests_per_hour = df.groupby('hour').size()
+print(requests_per_hour)
+
+
+requests_per_hour.plot(kind='bar', title='Server Load by Hour')
+plt.xlabel('Hour of Day')
+plt.ylabel('Number of Requests')
 plt.show()
